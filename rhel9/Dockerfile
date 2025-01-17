@@ -1,37 +1,40 @@
-# Buiding an Ubuntu Image from Version 24.04 #
-FROM ubuntu:24.04
+# Using Official Redhat 9.5 UBI Image #
+FROM redhat/ubi9:9.5
 
 # Labels #
-LABEL OS="Ubuntu-24.04"
-LABEL Maintainer="Mahesh Gupta"
+LABEL OS="Red Hat Enterprise Linux 9.5 (Plow)"
+LABEL Image="Red Hat Universal Base Image 9"
+LABEL Maintainer="Mahesh Kumar Gupta"
 LABEL Email="mahesh.gupta1804@gmail.com"
 
 # Update image, install openssh, sudo & python3 #
 RUN <<EOF
-apt update -y
-apt install -y openssh-server
-apt install -y sudo
-apt install -y python3.12
+yum install -y openssh-server
+yum install -y sudo
+yum install -y python3.12
 EOF
 
 # Create a user, group and set a password #
 RUN <<EOF
 groupadd -g 1001 admin
-useradd -rm -d /home/admin -s /bin/bash -g admin -G sudo -u 1001 admin
+useradd -rm -d /home/admin -s /bin/bash -g admin -u 1001 admin
 EOF
 
 # Create dir & add authorized_keys #
 RUN mkdir -p /home/admin/.ssh
 RUN chown admin:admin /home/admin/.ssh
 
-WORKDIR /home/admin/.ssh/
-COPY authorized_keys .
-RUN chown admin:admin authorized_keys
+# Generate SSH host keys
+RUN ssh-keygen -A
+
+# WORKDIR /home/admin/.ssh/
+COPY authorized_keys /home/admin/.ssh/
+RUN chown admin:admin /home/admin/.ssh/authorized_keys
 
 # Create sudo entry for admin user #
-WORKDIR /etc/sudoers.d/
-COPY admin .
-WORKDIR /
+# WORKDIR /etc/sudoers.d/
+COPY admin /etc/sudoers.d/
+
 
 # Configure SSH #
 RUN mkdir /var/run/sshd && \
