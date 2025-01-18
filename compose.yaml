@@ -1,0 +1,52 @@
+# Compose file will linux containers to run ansible playbook #
+name: ansible
+services:
+  redhat-ssh-9-5:
+    restart: always
+    build:
+      context: ${RHEL9_CONTAINER}
+      dockerfile: Dockerfile
+      tags:
+        - ${IMAGE_REG}/${COMPOSE_PROJECT_NAME}-${RHEL9_CONTAINER}:${TAG_VERSION}
+    container_name: ${COMPOSE_PROJECT_NAME}-${RHEL9_CONTAINER}
+    networks:
+      net0:
+        ipv4_address: ${RHEL9_CONTAINER_IP}
+    extra_hosts:
+      - devops.${DOMAIN_NAME}:${D_GATEWAY}
+      - devops:${D_GATEWAY}
+      
+    dns_search: ${DOMAIN_NAME}
+    dns:
+      - ${DNS1}
+      - ${DNS2}
+    hostname: ${COMPOSE_PROJECT_NAME}-${RHEL9_CONTAINER}.${DOMAIN_NAME}
+  
+  ubuntu-ssh-24-04:
+    restart: always
+    build:
+      context: ${UBUNTU24_CONTAINER}
+      dockerfile: Dockerfile
+      tags:
+        - ${IMAGE_REG}/${COMPOSE_PROJECT_NAME}-${UBUNTU24_CONTAINER}:${TAG_VERSION}
+    container_name: ${COMPOSE_PROJECT_NAME}-${UBUNTU24_CONTAINER}
+    networks:
+      net0:
+        ipv4_address: ${UBUNTU24_CONTAINER_IP}
+    extra_hosts:
+      - devops.${DOMAIN_NAME}:${D_GATEWAY}
+      - devops:${D_GATEWAY}
+    dns_search: ${DOMAIN_NAME}
+    hostname: ${COMPOSE_PROJECT_NAME}-${UBUNTU24_CONTAINER}.${DOMAIN_NAME}
+    dns:
+      - ${DNS1}
+      - ${DNS2}
+
+networks:
+  net0:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.22.0.0/16
+          ip_range: 172.22.1.0/24
+          gateway: ${D_GATEWAY}

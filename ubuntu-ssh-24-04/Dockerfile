@@ -12,6 +12,7 @@ apt update -y
 apt install -y openssh-server
 apt install -y sudo
 apt install -y python3.12
+apt install -y inetutils-ping
 EOF
 
 # Create a user, group and set a password #

@@ -12,6 +12,7 @@ RUN <<EOF
 yum install -y openssh-server
 yum install -y sudo
 yum install -y python3.12
+yum install -y iputils
 EOF
 
 # Create a user, group and set a password #
