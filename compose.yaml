@@ -1,4 +1,4 @@
-# Compose file will linux containers to run ansible playbook #
+# Docker compose file will linux containers to run ansible playbook #
 name: ansible
 services:
   redhat-ssh-9-5:
